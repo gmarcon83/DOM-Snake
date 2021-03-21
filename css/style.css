@@ -1,0 +1,28 @@
+h1 {
+  text-align: center;
+}
+#playfield {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 2px;
+  width: 500px;
+  border: 1px solid black;
+  padding: 2px;
+  margin: auto;
+}
+
+.ocupied {
+  background-color: black;
+  min-height: 23px;
+}
+
+.empty {
+  background-color: aqua;
+  min-height: 23px;
+}
+
+.food {
+  background-color: deeppink;
+  border-radius: 6px;
+  min-height: 23px;
+}
