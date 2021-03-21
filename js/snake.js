@@ -3,6 +3,7 @@ let snakeHead = {x:9, y:8};
 let snakeCells = [];
 let primeiroMovimento = true;
 let direcao = "cima";
+let ultimaDirecao = "cima";
 let timer;
 
 // Monta a grade, inicializa a cobra, adiciona os eventos do teclado
@@ -17,21 +18,26 @@ window.onload = function(){
     // Parte responsavel pelo imput do usuário
     document.addEventListener('keydown', function(event) {
         if(event.key == "a" || event.key == "ArrowLeft") {
+            if (ultimaDirecao == "dir") return // Para evitar voltas de 180
             direcao = "esq";
         }
         else if(event.key == "d" || event.key == "ArrowRight") {
+            if (ultimaDirecao == "esq") return
             direcao = "dir";
         }
         else if(event.key == "w" || event.key == "ArrowUp") {
+            if (ultimaDirecao == "baixo") return
             direcao = "cima";
         }
         else if(event.key == "s" || event.key == "ArrowDown" ) {
+            if (ultimaDirecao == "cima") return
             direcao = "baixo";
         }
     });
     gameMove(true);
 }
 
+// Controla o fps do jogo
 function gameMove(bool){
     if (bool){
         timer = setInterval(mover, 100);
@@ -42,8 +48,11 @@ function gameMove(bool){
 
 
 function mover(){
+    // Para evitar virar 180 graus
+    ultimaDirecao = direcao;
     switch (direcao){
         case "cima":
+            ultimaDirecao
             if (snakeHead.y == 0)
                 snakeHead.y = 15;
             else
@@ -70,22 +79,16 @@ function mover(){
     }
     let lugar = gridCalc(snakeHead.x, snakeHead.y);
 
-    // Se está vazia a célula move para o lugar
-    if (checkCell(lugar) == "ok"){
+    // Para não deletar imediatamente a cobra quando inicia o jogo
+    if (primeiroMovimento){
         setCell(lugar, "ocupied");
         snakeCells.push(lugar);
-        // Para não deletar imediatamente a cobra quando inicia o jogo
-        if (primeiroMovimento){
-            primeiroMovimento = false;
-            return;}
-        // Marca o espaço ocupado pela cauda como vazia e remove a posição
-        // da array
-        setCell(snakeCells[0], "empty");
-        snakeCells.shift();
-
+        primeiroMovimento = false;
+        return;
+    }
     // Se a célula possui comida aumenta a cobra, encerra o jogo se a cobra
     // está no tamanho máximo
-    } else if (checkCell(lugar) == "food"){
+    if (checkCell(lugar) == "food"){
         setCell(lugar, "ocupied");
         snakeCells.push(lugar);
         if (snakeCells.length == 320){
@@ -94,11 +97,23 @@ function mover(){
             criarComida();
             return
         }
+        return
+    }
+
+    // Marca o espaço ocupado pela cauda como vazia e remove a posição
+    // da array
+    setCell(snakeCells[0], "empty");
+    snakeCells.shift();
+
+    // Se está vazia a célula move para o lugar
+    if (checkCell(lugar) == "ok"){
+        setCell(lugar, "ocupied");
+        snakeCells.push(lugar);
 
     // Se a célula está ocupada fim de jogo
     } else {
         alert("Game Over");
-        location.reload();
+        reset(); //Compativel com codepen
     }
 
 }
@@ -142,4 +157,18 @@ function checkCell(elem){
         return "food"
     else
         return "end"
+}
+
+function reset(){
+    gameMove(false);
+    for (let cell of cells){
+        cell.className = "empty";
+    }
+    snakeHead = {x:9, y:8};
+    snakeCells = [];
+    primeiroMovimento = true;
+    direcao = "cima";
+    mover();
+    criarComida();
+    gameMove(true);
 }
