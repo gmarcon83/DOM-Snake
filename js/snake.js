@@ -15,6 +15,7 @@ window.onload = function(){
     }
     mover();
     criarComida();
+    mudarContador(0);
     // Parte responsavel pelo imput do usuário
     document.addEventListener('keydown', function(event) {
         if(event.key == "a" || event.key == "ArrowLeft") {
@@ -45,7 +46,6 @@ function gameMove(bool){
         clearInterval(timer);
     }
 }
-
 
 function mover(){
     // Para evitar virar 180 graus
@@ -95,6 +95,7 @@ function mover(){
             alert("Você ganhou")
         } else {
             criarComida();
+            mudarContador(snakeCells.length - 1);
             return
         }
         return
@@ -120,7 +121,7 @@ function mover(){
 
 // Transforma uma cordenada x y para a posiçao da array
 function gridCalc (x, y){
-    let pos = x + y * 20;
+    let pos = x + (y * 20);
     return pos;
 }
 
@@ -159,6 +160,11 @@ function checkCell(elem){
         return "end"
 }
 
+// Mostra os pontos
+function mudarContador(valor){
+    document.getElementById("contador").innerHTML = `Pontos = ${valor}`;
+}
+
 function reset(){
     gameMove(false);
     for (let cell of cells){
@@ -170,5 +176,6 @@ function reset(){
     direcao = "cima";
     mover();
     criarComida();
+    mudarContador(0);
     gameMove(true);
 }
